@@ -24,6 +24,7 @@ public class LoginActivity
         implements LoaderManager.LoaderCallbacks<Boolean> {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private static final int LOADER_ID = 0;
 
     @BindView(R.id.input_email)
     EditText _emailText;
@@ -85,7 +86,9 @@ public class LoginActivity
         Bundle bundle = new Bundle();
         bundle.putString("email", email);
         bundle.putString("pass", password);
-        Loader lm = getLoaderManager().initLoader(1, bundle, this);
+
+        getLoaderManager().destroyLoader(LOADER_ID);
+        Loader lm = getLoaderManager().initLoader(LOADER_ID , bundle, this);
         lm.forceLoad();
     }
 
@@ -157,8 +160,6 @@ public class LoginActivity
             onLoginSuccess();
         else
             onLoginFailed();
-
-        getLoaderManager().destroyLoader(1);
         progressDialog.dismiss();
     }
 

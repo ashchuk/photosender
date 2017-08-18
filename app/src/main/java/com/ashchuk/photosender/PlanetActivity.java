@@ -1,9 +1,13 @@
 package com.ashchuk.photosender;
 
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +21,9 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 import android.app.LoaderManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.ashchuk.photosender.GLES.GlRenderer;
@@ -35,11 +42,19 @@ public class PlanetActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         LoaderManager.LoaderCallbacks<ArrayList<Photo>> {
 
-    @BindView(R.id.refreshfab) FloatingActionButton fab;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.mGLView) SphereGLView mOpenGLView;
-    @BindView(R.id.nav_view) NavigationView navigationView;
-    @BindView(R.id.drawer_layout) DrawerLayout drawer;
+    private static final int LOADER_ID = 0;
+    private Boolean isBusy = false;
+
+    @BindView(R.id.refreshfab)
+    FloatingActionButton fab;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.mGLView)
+    SphereGLView mOpenGLView;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
 
     private GlRenderer mGLRenderer;
 
@@ -57,8 +72,7 @@ public class PlanetActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Downloading photos...", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                startDownloadAnimation();
                 startGetPhotoTask();
             }
         });
@@ -69,6 +83,32 @@ public class PlanetActivity extends AppCompatActivity
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void startDownloadAnimation() {
+        Animation animation = AnimationUtils.loadAnimation(
+                getApplicationContext(),
+                R.anim.rotate_clockwise);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (isBusy)
+                    fab.startAnimation(animation);
+                else
+                    fab.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        fab.startAnimation(animation);
     }
 
     @Override
@@ -129,10 +169,10 @@ public class PlanetActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SphereGLView.MessageEvent event) {
         Toast.makeText(PlanetActivity.this, "Selected photo UUID " + event.photoUuid, Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(this, GetPhotoActivity.class);
-//        intent.putExtra("uuid", event.photoUuid);
-//        finish();
-//        startActivity(intent);
+        Intent intent = new Intent(this, PhotoActivity.class);
+        intent.putExtra("uuid", event.photoUuid);
+        finish();
+        startActivity(intent);
     }
 
     @Override
@@ -168,8 +208,8 @@ public class PlanetActivity extends AppCompatActivity
     private void startGetPhotoTask() {
         try {
             LoaderManager lm = getLoaderManager();
-            lm.destroyLoader(0);
-            lm.initLoader(0, null, this).forceLoad();
+            lm.destroyLoader(LOADER_ID);
+            lm.initLoader(LOADER_ID, null, this).forceLoad();
         } catch (Exception ex) {
             Toast.makeText(PlanetActivity.this, "Error occurred while loading photo", Toast.LENGTH_LONG).show();
         }
@@ -182,10 +222,12 @@ public class PlanetActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Photo>> loader, ArrayList<Photo> photos) {
+        isBusy = true;
         if (photos == null)
             Toast.makeText(getBaseContext(), "Load failed", Toast.LENGTH_LONG).show();
         else
             mGLRenderer.AddFigure(photos);
+        isBusy = false;
     }
 
     @Override

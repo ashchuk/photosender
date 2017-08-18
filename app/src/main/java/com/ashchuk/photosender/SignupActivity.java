@@ -1,7 +1,9 @@
 package com.ashchuk.photosender;
 
+import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,11 +13,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ashchuk.photosender.Loaders.RegisterAsyncTaskLoader;
+
 import butterknife.ButterKnife;
 import butterknife.BindView;
 
-public class SignupActivity extends AppCompatActivity {
+public class SignupActivity
+        extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Boolean> {
     private static final String TAG = "SignupActivity";
+    private static final int LOADER_ID = 0;
 
     @BindView(R.id.input_name)
     EditText _nameText;
@@ -33,6 +40,8 @@ public class SignupActivity extends AppCompatActivity {
     Button _signupButton;
     @BindView(R.id.link_login)
     TextView _loginLink;
+
+    private ProgressDialog _progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +68,7 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    public void signup() {
+    private void signup() {
         Log.d(TAG, "Signup");
 
         if (!validate()) {
@@ -69,11 +78,11 @@ public class SignupActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
+        _progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Creating Account...");
-        progressDialog.show();
+        _progressDialog.setIndeterminate(true);
+        _progressDialog.setMessage("Creating Account...");
+        _progressDialog.show();
 
         String name = _nameText.getText().toString();
         String address = _addressText.getText().toString();
@@ -82,20 +91,17 @@ public class SignupActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
-        // TODO: Implement your own signup logic here.
+        Bundle bundle = new Bundle();
+        bundle.putString("email", email);
+        bundle.putString("password", password);
+        bundle.putString("name", name);
+        bundle.putString("address", address);
+        bundle.putString("mobile", mobile);
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        getLoaderManager().destroyLoader(LOADER_ID);
+        Loader lm = getLoaderManager().initLoader(LOADER_ID, bundle, this);
+        lm.forceLoad();
     }
-
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
@@ -105,7 +111,6 @@ public class SignupActivity extends AppCompatActivity {
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
         _signupButton.setEnabled(true);
     }
 
@@ -133,7 +138,6 @@ public class SignupActivity extends AppCompatActivity {
             _addressText.setError(null);
         }
 
-
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             _emailText.setError("enter a valid email address");
             valid = false;
@@ -155,7 +159,10 @@ public class SignupActivity extends AppCompatActivity {
             _passwordText.setError(null);
         }
 
-        if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
+        if (reEnterPassword.isEmpty() ||
+                reEnterPassword.length() < 4 ||
+                reEnterPassword.length() > 10 ||
+                !(reEnterPassword.equals(password))) {
             _reEnterPasswordText.setError("Password Do not match");
             valid = false;
         } else {
@@ -163,5 +170,30 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    private void startRegistrationTask(Bundle bundle) {
+        LoaderManager lm = getLoaderManager();
+        lm.destroyLoader(LOADER_ID);
+        lm.initLoader(LOADER_ID, bundle, this).forceLoad();
+    }
+
+    @Override
+    public Loader<Boolean> onCreateLoader(int id, Bundle args) {
+        return new RegisterAsyncTaskLoader(this, null, args);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Boolean> loader, Boolean result) {
+        if (result)
+            onSignupSuccess();
+        else
+            onSignupFailed();
+        _progressDialog.dismiss();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Boolean> loader) {
+
     }
 }
