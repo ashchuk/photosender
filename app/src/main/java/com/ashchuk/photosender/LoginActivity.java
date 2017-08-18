@@ -115,7 +115,6 @@ public class LoginActivity
         Intent intent = new Intent(this, PlanetActivity.class);
         finish();
         startActivity(intent);
-
         finish();
     }
 

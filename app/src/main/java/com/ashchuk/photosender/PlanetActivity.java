@@ -4,10 +4,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorListener;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,7 +19,6 @@ import java.util.ArrayList;
 import android.app.LoaderManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.ashchuk.photosender.GLES.GlRenderer;
@@ -171,7 +166,6 @@ public class PlanetActivity extends AppCompatActivity
         Toast.makeText(PlanetActivity.this, "Selected photo UUID " + event.photoUuid, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, PhotoActivity.class);
         intent.putExtra("uuid", event.photoUuid);
-        finish();
         startActivity(intent);
     }
 

@@ -25,11 +25,11 @@ public class GetUserAsyncTaskLoader extends AsyncTaskLoader {
         private String url = "http://photoservice-ashchuk.rhcloud.com/getuser";
         private JSONObject json;
 
-        private String Email;
+        private String uuid;
 
-        public GetUserAsyncTaskLoader(Context context, Bundle params) {
+        public GetUserAsyncTaskLoader(Context context, String userUuid) {
             super(context);
-            this.Email = params.getString("email");
+            this.uuid = userUuid;
             this.body = null;
 
             StaticWebClient.initInstance(context);
@@ -40,7 +40,7 @@ public class GetUserAsyncTaskLoader extends AsyncTaskLoader {
         public User loadInBackground() {
             try {
                 RequestBody formBody = new FormBody.Builder()
-                        .add("email", Email)
+                        .add("uuid", uuid)
                         .build();
 
                 Request getUserRequest = new Request.Builder()
