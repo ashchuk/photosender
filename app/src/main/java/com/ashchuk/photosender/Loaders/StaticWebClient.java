@@ -49,7 +49,7 @@ public class StaticWebClient {
 
     public boolean userAlreadyLoggedIn(){
         List<Cookie> savedCookies = StaticWebClient.getInstance().getPersistantCookies();
-        return !savedCookies.isEmpty() && savedCookies.get(0).name().equals("user_uuid");
+        return !savedCookies.isEmpty() && savedCookies.get(0).name().equals("userUuid");
     }
 
 }
