@@ -16,17 +16,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import com.ashchuk.photosender.Infrastructure.AppConstants;
 /**
  * Created by andro on 19.07.2017.
  */
 
 public class GetPhotosAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Photo>> {
 
-    private final String url = "http://photoservice-ashchuk.rhcloud.com/getphotos";
-
     private OkHttpClient client = StaticWebClient.getInstance().getHttpClient();
     private Response response;
     private ArrayList<Photo> photos = new ArrayList<Photo>();
+
+    private final String pathSegment = "/getphotos";
 
     public GetPhotosAsyncTaskLoader(Context context) { super(context); }
 
@@ -34,7 +35,7 @@ public class GetPhotosAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Photo>> 
     public ArrayList<Photo> loadInBackground() {
         try {
             Request photoRequest = new Request.Builder()
-                    .url(url)
+                    .url(AppConstants.SERVER_ADRESS.concat(pathSegment))
                     .build();
 
             response = client.newCall(photoRequest).execute();

@@ -9,15 +9,17 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import com.ashchuk.photosender.Models.Photo;
+
 import org.greenrobot.eventbus.EventBus;
 
 public class SphereGLView extends GLSurfaceView {
-    public class MessageEvent {
 
-        public final String photoUuid;
+    public class PhotoEvent {
+        public final Photo photo;
 
-        public MessageEvent(String photoUuid) {
-            this.photoUuid = photoUuid;
+        public PhotoEvent(Photo photo) {
+            this.photo = photo;
         }
     }
 
@@ -59,12 +61,10 @@ public class SphereGLView extends GLSurfaceView {
                     this.queueEvent(new Runnable() {
                         @Override
                         public void run() {
-                            String photoUuid = mRenderer.handleTouch(mDownX, mDownY);
-
-                            if (photoUuid == null)
+                            Photo photo = mRenderer.handleTouch(mDownX, mDownY);
+                            if (photo == null)
                                 return;
-
-                            EventBus.getDefault().post(new MessageEvent(photoUuid));
+                            EventBus.getDefault().post(new PhotoEvent(photo));
                         }
                     });
                 return true;

@@ -3,33 +3,29 @@ package com.ashchuk.photosender.GLES.Models;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.ashchuk.photosender.Models.Photo;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class Circle extends ClickableObject {
     private final static String TAG = "Circle";
 
-    private String photoUuid;
+    private Photo photo;
 
     private int slices = 30;
     private float radius = 0.05f;
 
-    private float latitude;
-    private float longitude;
 
     public Circle(String name, float[] color, float[] position,
-                  float latitude, float longitude, String photoUuid,
-                  int program, int matrixHandle, int positionHandle,
-                  int colorHandle) {
+                  Photo photo,
+                  int program, int matrixHandle, int positionHandle, int colorHandle) {
 
         this.name = name;
         this.color = color;
         this.position = position;
 
-        this.latitude = latitude;
-        this.longitude = longitude;
-
-        this.photoUuid = photoUuid;
+        this.photo = photo;
 
         initShapes();
 
@@ -69,8 +65,8 @@ public class Circle extends ClickableObject {
 
         Matrix.setIdentityM(mMMatrix, 0);
 
-        Matrix.rotateM(mMMatrix, 0, this.longitude, 0.0f, 1.0f, 0.0f);
-        Matrix.rotateM(mMMatrix, 0, this.latitude, -1.0f, 0.0f, 0.0f);
+        Matrix.rotateM(mMMatrix, 0, photo.getLongitude(), 0.0f, 1.0f, 0.0f);
+        Matrix.rotateM(mMMatrix, 0, photo.getLatitude(), -1.0f, 0.0f, 0.0f);
 
         Matrix.translateM(mMMatrix, 0, position[0], position[1], position[2]);
 
@@ -81,7 +77,7 @@ public class Circle extends ClickableObject {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, (slices + 2));
     }
 
-    public String getPhotoUuid() {
-        return photoUuid;
+    public Photo getPhoto() {
+        return photo;
     }
 }

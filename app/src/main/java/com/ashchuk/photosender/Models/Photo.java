@@ -1,5 +1,8 @@
 package com.ashchuk.photosender.Models;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -8,10 +11,10 @@ import io.realm.RealmObject;
  * Created by ashchuk on 30.11.16.
  */
 
-public class Photo extends RealmObject {
+public class Photo extends RealmObject implements Serializable {
 
     private String uuid;
-    private String user_uuid;
+    private String userUuid;
     private String photo;
     private Double size;
     private String comment;
@@ -19,11 +22,11 @@ public class Photo extends RealmObject {
     private float longitude;
     private Date date;
 
-    public String getId() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setId(String uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
@@ -75,11 +78,11 @@ public class Photo extends RealmObject {
         this.size = size;
     }
 
-    public String getUser_uuid() {
-        return user_uuid;
+    public String getUserUuid() {
+        return userUuid;
     }
 
-    public void setUser_uuid(String user_uuid) {
-        this.user_uuid = user_uuid;
+    public void setUserUuid(String user_uuid) {
+        this.userUuid = user_uuid;
     }
 }

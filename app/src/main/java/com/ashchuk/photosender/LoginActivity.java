@@ -15,13 +15,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ashchuk.photosender.Loaders.LoginAsyncTaskLoader;
+import com.ashchuk.photosender.Models.User;
+
+import java.io.Serializable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class LoginActivity
         extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Boolean> {
+        implements LoaderManager.LoaderCallbacks<User> {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
     private static final int LOADER_ID = 0;
@@ -88,7 +91,7 @@ public class LoginActivity
         bundle.putString("pass", password);
 
         getLoaderManager().destroyLoader(LOADER_ID);
-        Loader lm = getLoaderManager().initLoader(LOADER_ID , bundle, this);
+        Loader lm = getLoaderManager().initLoader(LOADER_ID, bundle, this);
         lm.forceLoad();
     }
 
@@ -96,7 +99,9 @@ public class LoginActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
+                User user = (User) data.getSerializableExtra("user");
                 Intent intent = new Intent(this, PlanetActivity.class);
+                intent.putExtra("user", user);
                 finish();
                 startActivity(intent);
                 this.finish();
@@ -109,10 +114,11 @@ public class LoginActivity
         moveTaskToBack(true);
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(User user) {
         _loginButton.setEnabled(true);
 
         Intent intent = new Intent(this, PlanetActivity.class);
+        intent.putExtra("user", user);
         finish();
         startActivity(intent);
         finish();
@@ -147,23 +153,23 @@ public class LoginActivity
     }
 
     @Override
-    public Loader<Boolean> onCreateLoader(int loaderId, Bundle bundle) {
+    public Loader<User> onCreateLoader(int loaderId, Bundle bundle) {
         String email = bundle.getString("email");
         String pass = bundle.getString("pass");
         return new LoginAsyncTaskLoader(this, email, pass);
     }
 
     @Override
-    public void onLoadFinished(Loader<Boolean> loader, Boolean result) {
-        if (result)
-            onLoginSuccess();
+    public void onLoadFinished(Loader<User> loader, User result) {
+        if (result != null)
+            onLoginSuccess(result);
         else
             onLoginFailed();
         progressDialog.dismiss();
     }
 
     @Override
-    public void onLoaderReset(Loader<Boolean> loader) {
+    public void onLoaderReset(Loader<User> loader) {
 
     }
 }

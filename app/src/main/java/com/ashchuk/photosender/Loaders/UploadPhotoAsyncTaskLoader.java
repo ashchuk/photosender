@@ -14,15 +14,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+import com.ashchuk.photosender.Infrastructure.AppConstants;
 /**
  * Created by ashchuk on 01.12.16.
  */
 
 public class UploadPhotoAsyncTaskLoader extends AsyncTaskLoader {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+    private final String PathSegment = "/addPhoto";
 
     private Bundle params;
-    private final String url = "http://photoservice-ashchuk.rhcloud.com/addphoto";
 
     private OkHttpClient client;
 
@@ -53,7 +54,7 @@ public class UploadPhotoAsyncTaskLoader extends AsyncTaskLoader {
                     .build();
 
             Request photoRequest = new Request.Builder()
-                    .url(url)
+                    .url(AppConstants.SERVER_ADRESS.concat(PathSegment))
                     .method("POST", photoBody)
                     .build();
 

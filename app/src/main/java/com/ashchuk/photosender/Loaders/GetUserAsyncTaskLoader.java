@@ -9,67 +9,65 @@ import com.ashchuk.photosender.Models.User;
 import org.json.JSONObject;
 
 import okhttp3.FormBody;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+import com.ashchuk.photosender.Infrastructure.AppConstants;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Created by andro on 17.02.2017.
  */
 
 public class GetUserAsyncTaskLoader extends AsyncTaskLoader {
-        private OkHttpClient client;
-        private ResponseBody body;
-        private String url = "http://photoservice-ashchuk.rhcloud.com/getuser";
-        private JSONObject json;
+    private OkHttpClient client;
+    private final String pathSegment = "getuser";
+    private HttpUrl url;
 
-        private String uuid;
+    private String userUuid;
 
-        public GetUserAsyncTaskLoader(Context context, String userUuid) {
-            super(context);
-            this.uuid = userUuid;
-            this.body = null;
+    public GetUserAsyncTaskLoader(Context context, String userUuid) {
+        super(context);
+        this.userUuid = userUuid;
 
-            StaticWebClient.initInstance(context);
-            client = StaticWebClient.getInstance().getHttpClient();
-        }
+        StaticWebClient.initInstance(context);
+        client = StaticWebClient.getInstance().getHttpClient();
+    }
 
-        @Override
-        public User loadInBackground() {
-            try {
-                RequestBody formBody = new FormBody.Builder()
-                        .add("uuid", uuid)
-                        .build();
-
-                Request getUserRequest = new Request.Builder()
-                        .url(url)
-                        .post(formBody)
-                        .build();
-
-                Response response = client.newCall(getUserRequest).execute();
-                body = response.body();
-                JSONObject data = new JSONObject(response.body().string());
-                json = data.getJSONObject("data");
-
-                String email = json.getString("email");
-                String nickname = json.getString("nickname");
-
-                String base64AuthorAvatar = json.getJSONObject("avatar").getString("$binary");
-
-                User user = new User();
-                user.setAvatar(base64AuthorAvatar);
-                user.setEmail(email);
-                user.setName(nickname);
-
-                return user;
-            } catch (Exception e) {
+    @Override
+    public User loadInBackground() {
+        try {
+             if (userUuid == null) {
                 return null;
+            } else {
+                url = new HttpUrl.Builder()
+                        .scheme("http")
+                        .host(AppConstants.SERVER_HOSTNAME)
+                        .port(AppConstants.SERVER_HOSTNAME_PORT)
+                        .addPathSegment(pathSegment)
+                        .addQueryParameter("userUuid", userUuid)
+                        .build();
             }
-            finally {
-                if (body != null)
-                    body.close();
-            }
+
+            Request getUserRequest = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            Response response = client.newCall(getUserRequest).execute();
+            JSONObject data = new JSONObject(response.body().string());
+
+            Gson gson = new GsonBuilder().setDateFormat("yy/MM/dd hh:mm:ss").create();
+            User user = gson.fromJson(data.toString(), User.class);
+
+            return user;
+        } catch (Exception e) {
+            return null;
+        } finally {
         }
+    }
 }

@@ -1,5 +1,6 @@
 package com.ashchuk.photosender.Models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -9,10 +10,10 @@ import io.realm.annotations.PrimaryKey;
  * Created by ashchuk on 29.11.16.
  */
 
-public class User extends RealmObject {
+public class User extends RealmObject implements Serializable{
     @PrimaryKey
     private String uuid;
-    private String name;
+    private String nickname;
     private String email;
     private String password;
     private Date registrationDate;
@@ -27,11 +28,11 @@ public class User extends RealmObject {
     }
 
     public String getName() {
-        return name;
+        return nickname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getEmail() {

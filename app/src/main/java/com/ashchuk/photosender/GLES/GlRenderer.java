@@ -114,7 +114,7 @@ public class GlRenderer implements Renderer {
             float[] color = colors.get(index);
 
             circlesToAdd.add(new Circle("Circle", color, new float[]{0, 0, 1.0f},
-                    photo.getLatitude(), photo.getLongitude(), photo.getId(),
+                    photo,
                     circleProgram, circleMVPMatrixHandle,
                     circlePositionHandler, circleColorHandler));
         }
@@ -190,7 +190,7 @@ public class GlRenderer implements Renderer {
         GLES20.glDeleteProgram(circleProgram);
     }
 
-    public String handleTouch(float rx, float ry) {
+    public Photo handleTouch(float rx, float ry) {
         Circle intersected = null;
         Double length = 0.0;
         for (Circle circle : circles) {
@@ -202,6 +202,6 @@ public class GlRenderer implements Renderer {
         if (intersected == null)
             return null;
 
-        return intersected.getPhotoUuid();
+        return intersected.getPhoto();
     }
 }

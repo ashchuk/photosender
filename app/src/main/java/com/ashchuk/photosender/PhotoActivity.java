@@ -11,9 +11,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ashchuk.photosender.Loaders.GetPhotoAsyncTaskLoader;
+import com.ashchuk.photosender.Loaders.GetPhotoImageAsyncTaskLoader;
 import com.ashchuk.photosender.Loaders.GetUserAsyncTaskLoader;
 import com.ashchuk.photosender.Models.Photo;
 import com.ashchuk.photosender.Models.User;
@@ -52,9 +51,6 @@ public class PhotoActivity
     @BindView(R.id.progressIndicator)
     AVLoadingIndicatorView progressIndicator;
 
-    private String photoUuid;
-    private String userUuid;
-
     private User user;
     private Photo photo;
 
@@ -64,10 +60,13 @@ public class PhotoActivity
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
 
-        photoUuid = getIntent().getStringExtra("photoUuid");
-        userUuid = getIntent().getStringExtra("userUuid");
+        photo = (Photo) getIntent().getSerializableExtra("photo");
 
         startDownload();
+    }
+
+    public void redirectToProfile(View view) {
+        return;
     }
 
     private void showProgress() {
@@ -96,10 +95,9 @@ public class PhotoActivity
     @Override
     public Loader<Object> onCreateLoader(int id, Bundle bundle) {
         if (id == PHOTO_LOADER_ID)
-            return new GetPhotoAsyncTaskLoader(this, photoUuid);
+            return new GetPhotoImageAsyncTaskLoader(this, photo.getUuid());
         if (id == USER_LOADER_ID)
-            return new GetUserAsyncTaskLoader(this, userUuid);
-
+            return new GetUserAsyncTaskLoader(this, photo.getUserUuid());
         return null;
     }
 
@@ -113,19 +111,14 @@ public class PhotoActivity
         }
 
         if (loader.getId() == PHOTO_LOADER_ID) {
-            photo = (Photo) obj;
-
-            comment.setText(photo.getDescription());
-            date.setText(photo.getDate().toString());
-            location.setText(Float.toString(photo.getLatitude()) + ", " + Float.toString(photo.getLongitude()));
-            Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(photo.getPhoto(), 0), 0, Base64.decode(photo.getPhoto(), 0).length);
+            String base64 = (String) obj;
+            Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(base64, 0), 0, Base64.decode(base64, 0).length);
             photoView.setImageBitmap(image);
 
             photoDownloaded = true;
         }
         if (loader.getId() == USER_LOADER_ID) {
             user = (User) obj;
-
             username.setText(user.getName());
             Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(user.getAvatar(), 0), 0, Base64.decode(user.getAvatar(), 0).length);
             userProfileImage.setImageBitmap(image);

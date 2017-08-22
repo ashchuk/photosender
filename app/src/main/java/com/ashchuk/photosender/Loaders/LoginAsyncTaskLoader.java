@@ -15,6 +15,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import com.ashchuk.photosender.Infrastructure.AppConstants;
+
 /**
  * Created by ashchuk on 02.12.16.
  */
@@ -22,8 +24,9 @@ import okhttp3.Response;
 public class LoginAsyncTaskLoader extends AsyncTaskLoader {
 
     private OkHttpClient client;
-    private User user;
-    private String url = "http://photoservice-ashchuk.rhcloud.com/login";
+
+    private final String logoutPathSegment = "/logout";
+    private final String loginPathSegment = "/login";
 
     private String email;
     private String password;
@@ -38,10 +41,10 @@ public class LoginAsyncTaskLoader extends AsyncTaskLoader {
     }
 
     @Override
-    public Boolean loadInBackground() {
+    public User loadInBackground() {
         try {
             Request clearCookiesRequest = new Request.Builder()
-                    .url("http://photoservice-ashchuk.rhcloud.com/logout")
+                    .url(AppConstants.SERVER_ADRESS.concat(logoutPathSegment))
                     .build();
 
             RequestBody formBody = new FormBody.Builder()
@@ -50,20 +53,22 @@ public class LoginAsyncTaskLoader extends AsyncTaskLoader {
                     .build();
 
             Request loginRequest = new Request.Builder()
-                    .url(url)
+                    .url(AppConstants.SERVER_ADRESS.concat(loginPathSegment))
                     .post(formBody)
                     .build();
 
             client.newCall(clearCookiesRequest).execute();
             Response response = client.newCall(loginRequest).execute();
+
+            if (!response.isSuccessful()) return null;
+
             JSONObject data = new JSONObject(response.body().string());
-
             Gson gson = new GsonBuilder().setDateFormat("yy/MM/dd hh:mm:ss").create();
-            user = gson.fromJson(data.toString(), User.class);
+            User user = gson.fromJson(data.toString(), User.class);
 
-            return email.equals(user.getEmail());
+            return user;
         } catch (Exception e) {
-            return false;
+            return null;
         } finally {
 //            RealmContext.CopyUserToRealm(user, getContext());
         }

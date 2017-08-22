@@ -2,8 +2,11 @@ package com.ashchuk.photosender;
 
 import android.content.Intent;
 import android.content.Loader;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Base64;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,12 +22,14 @@ import java.util.ArrayList;
 import android.app.LoaderManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ashchuk.photosender.GLES.GlRenderer;
 import com.ashchuk.photosender.GLES.SphereGLView;
 import com.ashchuk.photosender.Loaders.GetPhotosAsyncTaskLoader;
 import com.ashchuk.photosender.Models.Photo;
+import com.ashchuk.photosender.Models.User;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.ThreadMode;
@@ -32,10 +37,17 @@ import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PlanetActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         LoaderManager.LoaderCallbacks<ArrayList<Photo>> {
+
+    static class HeaderView {
+        @BindView( R.id.userProfileImage ) CircleImageView userProfileImage;
+        @BindView( R.id.username ) TextView username;
+        @BindView( R.id.email ) TextView email;
+    }
 
     private static final int LOADER_ID = 0;
     private Boolean isBusy = false;
@@ -53,11 +65,16 @@ public class PlanetActivity extends AppCompatActivity
 
     private GlRenderer mGLRenderer;
 
+    private User currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_planet);
         ButterKnife.bind(this);
+
+        HeaderView header = new HeaderView();
+        ButterKnife.bind(header, navigationView.getHeaderView(0));
 
         mGLRenderer = new GlRenderer(this);
         mOpenGLView.InitView(mGLRenderer);
@@ -76,6 +93,14 @@ public class PlanetActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        currentUser = (User) getIntent().getSerializableExtra("user");
+        header.username.setText(currentUser.getName());
+        header.email.setText(currentUser.getEmail());
+        Bitmap image = BitmapFactory.decodeByteArray(
+                Base64.decode(currentUser.getAvatar(), 0),
+                0, Base64.decode(currentUser.getAvatar(), 0).length);
+        header.userProfileImage.setImageBitmap(image);
 
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -162,10 +187,9 @@ public class PlanetActivity extends AppCompatActivity
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SphereGLView.MessageEvent event) {
-        Toast.makeText(PlanetActivity.this, "Selected photo UUID " + event.photoUuid, Toast.LENGTH_SHORT).show();
+    public void onMessageEvent(SphereGLView.PhotoEvent event) {
         Intent intent = new Intent(this, PhotoActivity.class);
-        intent.putExtra("uuid", event.photoUuid);
+        intent.putExtra("photo", event.photo);
         startActivity(intent);
     }
 
