@@ -43,17 +43,20 @@ public class PlanetActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         LoaderManager.LoaderCallbacks<ArrayList<Photo>> {
 
+    private static final int LOADER_ID = 0;
+    private static final int HEADER_VIEW_INDEX = 0;
+    private Boolean isBusy = false;
+
     static class HeaderView {
         @BindView( R.id.userProfileImage ) CircleImageView userProfileImage;
         @BindView( R.id.username ) TextView username;
         @BindView( R.id.email ) TextView email;
     }
 
-    private static final int LOADER_ID = 0;
-    private Boolean isBusy = false;
-
     @BindView(R.id.refreshfab)
-    FloatingActionButton fab;
+    FloatingActionButton refreshfab;
+    @BindView(R.id.photofab)
+    FloatingActionButton photofab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.mGLView)
@@ -64,24 +67,21 @@ public class PlanetActivity extends AppCompatActivity
     DrawerLayout drawer;
 
     private GlRenderer mGLRenderer;
-
     private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_planet);
-        ButterKnife.bind(this);
 
         HeaderView header = new HeaderView();
-        ButterKnife.bind(header, navigationView.getHeaderView(0));
+        ButterKnife.bind(this);
+        ButterKnife.bind(header, navigationView.getHeaderView(HEADER_VIEW_INDEX));
 
         mGLRenderer = new GlRenderer(this);
         mOpenGLView.InitView(mGLRenderer);
 
-        setSupportActionBar(toolbar);
-
-        fab.setOnClickListener(new View.OnClickListener() {
+        refreshfab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startDownloadAnimation();
@@ -89,12 +89,29 @@ public class PlanetActivity extends AppCompatActivity
             }
         });
 
+        photofab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectToTakePhoto();
+            }
+        });
+
+        navigationView.getHeaderView(HEADER_VIEW_INDEX)
+                .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                redirectToProfile(currentUser);
+            }
+        });
+
+        setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         currentUser = (User) getIntent().getSerializableExtra("user");
+
         header.username.setText(currentUser.getName());
         header.email.setText(currentUser.getEmail());
         Bitmap image = BitmapFactory.decodeByteArray(
@@ -103,6 +120,17 @@ public class PlanetActivity extends AppCompatActivity
         header.userProfileImage.setImageBitmap(image);
 
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void redirectToTakePhoto() {
+        Intent intent = new Intent(this, TakePhotoActivity.class);
+        startActivity(intent);
+    }
+
+    public void redirectToProfile(User user) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
     }
 
     private void startDownloadAnimation() {
@@ -118,9 +146,9 @@ public class PlanetActivity extends AppCompatActivity
             @Override
             public void onAnimationEnd(Animation animation) {
                 if (isBusy)
-                    fab.startAnimation(animation);
+                    refreshfab.startAnimation(animation);
                 else
-                    fab.clearAnimation();
+                    refreshfab.clearAnimation();
             }
 
             @Override
@@ -128,7 +156,7 @@ public class PlanetActivity extends AppCompatActivity
 
             }
         });
-        fab.startAnimation(animation);
+        refreshfab.startAnimation(animation);
     }
 
     @Override
