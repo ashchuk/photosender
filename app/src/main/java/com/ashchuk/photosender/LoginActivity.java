@@ -17,8 +17,6 @@ import android.widget.Toast;
 import com.ashchuk.photosender.Loaders.LoginAsyncTaskLoader;
 import com.ashchuk.photosender.Models.User;
 
-import java.io.Serializable;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -61,7 +59,7 @@ public class LoginActivity
                 // Start the Signup activity
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
-                finish();
+//                finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });

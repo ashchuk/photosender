@@ -37,7 +37,11 @@
             android:name=".PlanetActivity"
             android:label="@string/title_activity_planet"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".PhotoActivity"></activity>
+        <activity android:name=".PhotoActivity" />
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

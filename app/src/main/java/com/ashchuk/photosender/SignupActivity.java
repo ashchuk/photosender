@@ -110,7 +110,7 @@ public class SignupActivity
 
     public void onSignupSuccess(User user) {
         _signupButton.setEnabled(true);
-        Intent intent = new Intent(this, SignupActivity.class);
+        Intent intent = new Intent();
         intent.putExtra("user", user);
         setResult(RESULT_OK, intent);
         finish();

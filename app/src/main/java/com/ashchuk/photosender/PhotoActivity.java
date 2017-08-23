@@ -1,6 +1,7 @@
 package com.ashchuk.photosender;
 
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -66,7 +67,9 @@ public class PhotoActivity
     }
 
     public void redirectToProfile(View view) {
-        return;
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
     }
 
     private void showProgress() {
