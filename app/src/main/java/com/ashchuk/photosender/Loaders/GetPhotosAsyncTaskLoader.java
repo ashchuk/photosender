@@ -21,7 +21,7 @@ import com.ashchuk.photosender.Infrastructure.AppConstants;
  * Created by andro on 19.07.2017.
  */
 
-public class GetPhotosAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Photo>> {
+public class GetPhotosAsyncTaskLoader extends AsyncTaskLoader<Object> {
 
     private OkHttpClient client = StaticWebClient.getInstance().getHttpClient();
     private Response response;
@@ -32,7 +32,7 @@ public class GetPhotosAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Photo>> 
     public GetPhotosAsyncTaskLoader(Context context) { super(context); }
 
     @Override
-    public ArrayList<Photo> loadInBackground() {
+    public Object loadInBackground() {
         try {
             Request photoRequest = new Request.Builder()
                     .url(AppConstants.SERVER_ADRESS.concat(pathSegment))

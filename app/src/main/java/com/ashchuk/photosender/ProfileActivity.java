@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.ashchuk.photosender.Models.User;
 
@@ -24,6 +25,11 @@ public class ProfileActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.fab)
     FloatingActionButton fab;
+
+    @BindView(R.id.email)
+    TextView email;
+    @BindView(R.id.registrationDate)
+    TextView registrationDate;
 
     private User user;
 
@@ -48,5 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(user.getAvatar(), 0), 0, Base64.decode(user.getAvatar(), 0).length);
         userProfileImage.setImageBitmap(image);
+        email.setText(user.getEmail());
+        registrationDate.setText(user.getRegistrationDate().toString());
     }
 }

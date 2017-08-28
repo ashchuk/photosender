@@ -2,19 +2,15 @@ package com.ashchuk.photosender.Loaders;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.os.Bundle;
 
 import com.ashchuk.photosender.Models.User;
 
 import org.json.JSONObject;
 
-import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 import com.ashchuk.photosender.Infrastructure.AppConstants;
 import com.google.gson.Gson;

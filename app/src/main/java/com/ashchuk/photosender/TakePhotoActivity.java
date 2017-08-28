@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
@@ -20,7 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -86,11 +84,21 @@ public class TakePhotoActivity extends AppCompatActivity
         sendfab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Upload photo...", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
 
-                if (image == null)
+                if (image == null) {
+                    Snackbar.make(view, "Make photo first", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
                     return;
+                }
+
+                if (lastKnownLocation == null) {
+                    Snackbar.make(view, "Add location before sending!", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                    return;
+                }
+
+                Snackbar.make(view, "Upload photo...", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 image.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -98,8 +106,8 @@ public class TakePhotoActivity extends AppCompatActivity
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("image", stream.toByteArray());
                 bundle.putString("comment", !commentView.getText().toString().isEmpty() ? commentView.getText().toString() : "");
-                bundle.putString("latitude", (lastKnownLocation != null) ? Double.toString(lastKnownLocation.getLatitude()) : "");
-                bundle.putString("longitude", (lastKnownLocation != null) ? Double.toString(lastKnownLocation.getLongitude()) : "");
+                bundle.putDouble("latitude", lastKnownLocation.getLatitude());
+                bundle.putDouble("longitude", lastKnownLocation.getLongitude());
 
                 startUploadPhotoTask(bundle);
             }

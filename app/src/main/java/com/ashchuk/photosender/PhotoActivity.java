@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -18,6 +19,8 @@ import com.ashchuk.photosender.Loaders.GetUserAsyncTaskLoader;
 import com.ashchuk.photosender.Models.Photo;
 import com.ashchuk.photosender.Models.User;
 import com.wang.avi.AVLoadingIndicatorView;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,6 +63,15 @@ public class PhotoActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
+
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f", photo.getLatitude(), photo.getLongitude());
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                startActivity(intent);
+            }
+        });
 
         photo = (Photo) getIntent().getSerializableExtra("photo");
 
@@ -117,6 +129,8 @@ public class PhotoActivity
             String base64 = (String) obj;
             Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(base64, 0), 0, Base64.decode(base64, 0).length);
             photoView.setImageBitmap(image);
+            comment.setText(photo.getDescription());
+            location.setText(String.format("%.4f, %.4f", photo.getLatitude(), photo.getLongitude()));
 
             photoDownloaded = true;
         }

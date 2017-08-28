@@ -15,10 +15,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ashchuk.photosender.Loaders.LoginAsyncTaskLoader;
+import com.ashchuk.photosender.Loaders.StaticWebClient;
 import com.ashchuk.photosender.Models.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 public class LoginActivity
         extends AppCompatActivity
@@ -48,7 +50,9 @@ public class LoginActivity
 
             @Override
             public void onClick(View v) {
-                login();
+                String email = _emailText.getText().toString();
+                String password = _passwordText.getText().toString();
+                login(email, password);
             }
         });
 
@@ -56,16 +60,29 @@ public class LoginActivity
 
             @Override
             public void onClick(View v) {
-                // Start the Signup activity
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
-//                finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+
+        tryToLogin();
     }
 
-    public void login() {
+    private void tryToLogin() {
+        Realm.init(this);
+        Realm realm = Realm.getDefaultInstance();
+        User user = realm.where(User.class).findFirst();
+
+        if (user == null)
+            return;
+
+        _emailText.setText(user.getEmail());
+        _passwordText.setText(user.getPassword());
+        login(user.getEmail(), user.getPassword());
+    }
+
+    public void login(String email, String password) {
         Log.d(TAG, "Login");
 
         if (!validate()) {
@@ -80,9 +97,6 @@ public class LoginActivity
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
-
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
 
         Bundle bundle = new Bundle();
         bundle.putString("email", email);
@@ -102,7 +116,6 @@ public class LoginActivity
                 intent.putExtra("user", user);
                 finish();
                 startActivity(intent);
-                this.finish();
             }
         }
     }
@@ -114,12 +127,10 @@ public class LoginActivity
 
     public void onLoginSuccess(User user) {
         _loginButton.setEnabled(true);
-
         Intent intent = new Intent(this, PlanetActivity.class);
         intent.putExtra("user", user);
         finish();
         startActivity(intent);
-        finish();
     }
 
     public void onLoginFailed() {

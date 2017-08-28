@@ -6,17 +6,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by ashchuk on 30.11.16.
  */
 
 public class Photo extends RealmObject implements Serializable {
-
+    @PrimaryKey
     private String uuid;
     private String userUuid;
     private String photo;
-    private Double size;
     private String comment;
     private float latitude;
     private float longitude;
@@ -24,10 +24,6 @@ public class Photo extends RealmObject implements Serializable {
 
     public String getUuid() {
         return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public String getPhoto() {
@@ -42,10 +38,6 @@ public class Photo extends RealmObject implements Serializable {
         return comment;
     }
 
-    public void setDescription(String description) {
-        this.comment = description;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -58,31 +50,11 @@ public class Photo extends RealmObject implements Serializable {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
-    }
-
     public float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getSize() {
-        return size;
-    }
-
-    public void setSize(Double size) {
-        this.size = size;
-    }
-
     public String getUserUuid() {
         return userUuid;
-    }
-
-    public void setUserUuid(String user_uuid) {
-        this.userUuid = user_uuid;
     }
 }

@@ -38,8 +38,8 @@ public class UploadPhotoAsyncTaskLoader extends AsyncTaskLoader {
         try {
             RequestBody photoBody = new MultipartBody.Builder()
                     .addFormDataPart("comment", URLEncoder.encode(params.getString("comment"), "UTF-8"))
-                    .addFormDataPart("latitude", URLEncoder.encode(params.getString("latitude"), "UTF-8"))
-                    .addFormDataPart("longitude", URLEncoder.encode(params.getString("longitude"), "UTF-8"))
+                    .addFormDataPart("latitude", Double.toString(params.getDouble("latitude")))
+                    .addFormDataPart("longitude", Double.toString(params.getDouble("longitude")))
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("filearg", "photo.png",
                             RequestBody.create(MEDIA_TYPE_PNG, params.getByteArray("image")))

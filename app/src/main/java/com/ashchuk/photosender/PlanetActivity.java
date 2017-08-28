@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.ashchuk.photosender.GLES.GlRenderer;
 import com.ashchuk.photosender.GLES.SphereGLView;
 import com.ashchuk.photosender.Loaders.GetPhotosAsyncTaskLoader;
+import com.ashchuk.photosender.Loaders.LogoutAsyncTaskLoader;
 import com.ashchuk.photosender.Models.Photo;
 import com.ashchuk.photosender.Models.User;
 
@@ -41,16 +42,20 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PlanetActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        LoaderManager.LoaderCallbacks<ArrayList<Photo>> {
+        LoaderManager.LoaderCallbacks<Object> {
 
-    private static final int LOADER_ID = 0;
+    private static final int LOGOUT_LOADER_ID = 0;
+    private static final int SYNC_LOADER_ID = 1;
     private static final int HEADER_VIEW_INDEX = 0;
     private Boolean isBusy = false;
 
     static class HeaderView {
-        @BindView( R.id.userProfileImage ) CircleImageView userProfileImage;
-        @BindView( R.id.username ) TextView username;
-        @BindView( R.id.email ) TextView email;
+        @BindView(R.id.userProfileImage)
+        CircleImageView userProfileImage;
+        @BindView(R.id.username)
+        TextView username;
+        @BindView(R.id.email)
+        TextView email;
     }
 
     @BindView(R.id.refreshfab)
@@ -98,11 +103,11 @@ public class PlanetActivity extends AppCompatActivity
 
         navigationView.getHeaderView(HEADER_VIEW_INDEX)
                 .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redirectToProfile(currentUser);
-            }
-        });
+                    @Override
+                    public void onClick(View v) {
+                        redirectToProfile(currentUser);
+                    }
+                });
 
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -196,18 +201,14 @@ public class PlanetActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.sendmenu) {
+            redirectToTakePhoto();
+        } else if (id == R.id.profilemenu) {
+            redirectToProfile(currentUser);
+        } else if (id == R.id.syncmenu) {
+            startGetPhotoTask();
+        } else if (id == R.id.logout) {
+            startLogoutTask();
         }
 
         drawer.closeDrawer(GravityCompat.START);
@@ -251,23 +252,13 @@ public class PlanetActivity extends AppCompatActivity
         super.onStop();
     }
 
-    private void startGetPhotoTask() {
-        try {
-            LoaderManager lm = getLoaderManager();
-            lm.destroyLoader(LOADER_ID);
-            lm.initLoader(LOADER_ID, null, this).forceLoad();
-        } catch (Exception ex) {
-            Toast.makeText(PlanetActivity.this, "Error occurred while loading photo", Toast.LENGTH_LONG).show();
-        }
+    private void logout() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        finish();
+        startActivity(intent);
     }
 
-    @Override
-    public Loader<ArrayList<Photo>> onCreateLoader(int id, Bundle bundle) {
-        return new GetPhotosAsyncTaskLoader(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<Photo>> loader, ArrayList<Photo> photos) {
+    private void addPhotosToRenderer(ArrayList<Photo> photos) {
         isBusy = true;
         if (photos == null)
             Toast.makeText(getBaseContext(), "Load failed", Toast.LENGTH_LONG).show();
@@ -276,8 +267,54 @@ public class PlanetActivity extends AppCompatActivity
         isBusy = false;
     }
 
+    private void startGetPhotoTask() {
+        LoaderManager lm = getLoaderManager();
+        lm.destroyLoader(SYNC_LOADER_ID);
+        lm.initLoader(SYNC_LOADER_ID, null, this).forceLoad();
+    }
+
+    private void startLogoutTask() {
+        LoaderManager lm = getLoaderManager();
+        lm.destroyLoader(LOGOUT_LOADER_ID);
+        lm.initLoader(LOGOUT_LOADER_ID, null, this).forceLoad();
+    }
+
+    private void restartLoader(int loaderId) {
+        LoaderManager lm = getLoaderManager();
+        lm.destroyLoader(loaderId);
+        lm.initLoader(loaderId, null, this).forceLoad();
+    }
+
     @Override
-    public void onLoaderReset(Loader<ArrayList<Photo>> loader) {
+    public Loader<Object> onCreateLoader(int id, Bundle bundle) {
+        if (id == SYNC_LOADER_ID)
+            return new GetPhotosAsyncTaskLoader(this);
+        if (id == LOGOUT_LOADER_ID)
+            return new LogoutAsyncTaskLoader(this, currentUser.getId());
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Object> loader, Object data) {
+        if (data == null) {
+            restartLoader(loader.getId());
+            return;
+        }
+
+        if (loader.getId() == LOGOUT_LOADER_ID) {
+            Boolean result = (Boolean) data;
+            if (result) logout();
+            else restartLoader(loader.getId());
+        }
+
+        if (loader.getId() == SYNC_LOADER_ID) {
+            ArrayList<Photo> photos = (ArrayList<Photo>) data;
+            addPhotosToRenderer(photos);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Object> loader) {
 
     }
 }

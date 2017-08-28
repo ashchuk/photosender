@@ -57,7 +57,7 @@ public class SphereGLView extends GLSurfaceView {
             case MotionEvent.ACTION_UP:
                 float mUpX = event.getX();
                 float mUpY = event.getY();
-                if (Math.abs(mUpX - mDownX) < 0.1 && Math.abs(mUpY - mDownY) < 0.1)
+                if (Math.abs(mUpX - mDownX) < 2 && Math.abs(mUpY - mDownY) < 2) // 0.1
                     this.queueEvent(new Runnable() {
                         @Override
                         public void run() {
@@ -71,8 +71,8 @@ public class SphereGLView extends GLSurfaceView {
             case MotionEvent.ACTION_MOVE:
                 float mX = event.getX();
                 float mY = event.getY();
-                mRenderer.PointerX += (mX - mdX) / 10;
-                mRenderer.PointerY += (mY - mdY) / 10;
+                mRenderer.PointerX += (mX - mdX) / 20;
+                mRenderer.PointerY += (mY - mdY) / 20;
                 mdX = mX;
                 mdY = mY;
                 return true;

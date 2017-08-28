@@ -10,7 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by ashchuk on 29.11.16.
  */
 
-public class User extends RealmObject implements Serializable{
+public class User extends RealmObject implements Serializable {
     @PrimaryKey
     private String uuid;
     private String nickname;
@@ -55,15 +55,7 @@ public class User extends RealmObject implements Serializable{
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
     public Date getRegistrationDate() {
         return registrationDate;
-    }
-
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
     }
 }

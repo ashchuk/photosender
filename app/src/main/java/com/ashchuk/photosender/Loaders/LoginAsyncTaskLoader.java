@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 
 import org.json.JSONObject;
 
+import io.realm.Realm;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -25,7 +26,6 @@ public class LoginAsyncTaskLoader extends AsyncTaskLoader {
 
     private OkHttpClient client;
 
-    private final String logoutPathSegment = "/logout";
     private final String loginPathSegment = "/login";
 
     private String email;
@@ -43,10 +43,6 @@ public class LoginAsyncTaskLoader extends AsyncTaskLoader {
     @Override
     public User loadInBackground() {
         try {
-            Request clearCookiesRequest = new Request.Builder()
-                    .url(AppConstants.SERVER_ADRESS.concat(logoutPathSegment))
-                    .build();
-
             RequestBody formBody = new FormBody.Builder()
                     .add("email", email)
                     .add("password", password)
@@ -57,20 +53,26 @@ public class LoginAsyncTaskLoader extends AsyncTaskLoader {
                     .post(formBody)
                     .build();
 
-            client.newCall(clearCookiesRequest).execute();
             Response response = client.newCall(loginRequest).execute();
 
             if (!response.isSuccessful()) return null;
 
             JSONObject data = new JSONObject(response.body().string());
             Gson gson = new GsonBuilder().setDateFormat("yy/MM/dd hh:mm:ss").create();
+
             User user = gson.fromJson(data.toString(), User.class);
+
+            Realm.init(this.getContext());
+            Realm realm = Realm.getDefaultInstance();
+            if (realm.where(User.class).equalTo("uuid", user.getId()).findFirst() == null) {
+                realm.beginTransaction();
+                realm.copyToRealm(user);
+                realm.commitTransaction();
+            }
 
             return user;
         } catch (Exception e) {
             return null;
-        } finally {
-//            RealmContext.CopyUserToRealm(user, getContext());
         }
     }
 }
