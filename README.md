@@ -3,7 +3,7 @@ Simple Android app to share photos with [Photoservise](https://github.com/ashchu
 
 Used GLES2 to draw planet and markers
 
-![alt text](https://github.com/ashchuk/photosender/gif/demo.gif)
+![alt text](https://github.com/ashchuk/photosender/blob/master/gif/demo.gif)
 
 ## Functionality
 
