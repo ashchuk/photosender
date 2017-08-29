@@ -65,13 +65,13 @@ public class PlanetActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar _toolbarView;
     @BindView(R.id.mGLView)
-    SphereGLView _OpenGLView;
+    SphereGLView _openGLView;
     @BindView(R.id.nav_view)
     NavigationView _navigationView;
     @BindView(R.id.drawer_layout)
     DrawerLayout _drawerLayoutView;
 
-    private GlRenderer mGLRenderer;
+    private GlRenderer renderer;
     private User currentUser;
 
     @Override
@@ -83,8 +83,8 @@ public class PlanetActivity extends AppCompatActivity
         ButterKnife.bind(this);
         ButterKnife.bind(header, _navigationView.getHeaderView(HEADER_VIEW_INDEX));
 
-        mGLRenderer = new GlRenderer(this);
-        _OpenGLView.InitView(mGLRenderer);
+        renderer = new GlRenderer(this);
+        _openGLView.InitView(renderer);
 
         _refreshFABView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,6 +139,7 @@ public class PlanetActivity extends AppCompatActivity
     }
 
     private void startDownloadAnimation() {
+        isBusy = true;
         Animation animation = AnimationUtils.loadAnimation(
                 getApplicationContext(),
                 R.anim.rotate_clockwise);
@@ -222,22 +223,27 @@ public class PlanetActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(GlRenderer.AddFigureEvent event) {
+        isBusy = event.isBusy;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mGLRenderer.DeleteProgramms();
+        renderer.DeleteProgramms();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        _OpenGLView.onResume();
+        _openGLView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        _OpenGLView.onPause();
+        _openGLView.onPause();
     }
 
     @Override
@@ -259,12 +265,10 @@ public class PlanetActivity extends AppCompatActivity
     }
 
     private void addPhotosToRenderer(ArrayList<Photo> photos) {
-        isBusy = true;
         if (photos == null)
             Toast.makeText(getBaseContext(), "Load failed", Toast.LENGTH_LONG).show();
         else
-            mGLRenderer.AddFigure(photos);
-        isBusy = false;
+            renderer.AddPhotos(photos);
     }
 
     private void startGetPhotoTask() {

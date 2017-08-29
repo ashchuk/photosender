@@ -13,6 +13,8 @@ import com.ashchuk.photosender.GLES.Tools.GLToolbox;
 import com.ashchuk.photosender.Models.Photo;
 import com.ashchuk.photosender.R;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +34,14 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class GlRenderer implements Renderer {
 
+    public class AddFigureEvent {
+        public final Boolean isBusy;
+
+        public AddFigureEvent(Boolean isBusy) {
+            this.isBusy = isBusy;
+        }
+    }
+
     private static final String TAG = "GLES20Activity";
 
     private final Context mContext;
@@ -45,7 +55,6 @@ public class GlRenderer implements Renderer {
     private int circlePositionHandler;
     private int circleColorHandler;
     private ArrayList<Circle> circles = new ArrayList<Circle>();
-    private ArrayList<Circle> circlesToAdd = new ArrayList<Circle>();
 
     private int sphereMVPMatrixHandle;
     private int sphereProgram;
@@ -60,6 +69,7 @@ public class GlRenderer implements Renderer {
 
     public volatile float PointerX;
     public volatile float PointerY;
+    private boolean isBusy;
 
     public GlRenderer(final Context context) {
         mContext = context;
@@ -107,18 +117,21 @@ public class GlRenderer implements Renderer {
         GLES20.glDisable(GLES20.GL_CULL_FACE);
     }
 
-    public void AddFigure(ArrayList<Photo> photos) {
+    public void AddPhotos(ArrayList<Photo> photos) {
+        isBusy = true;
+        circles.clear();
         for (Photo photo : photos) {
             Random randomGenerator = new Random();
             int index = randomGenerator.nextInt(colors.size());
             float[] color = colors.get(index);
 
-            circlesToAdd.add(new Circle("Circle", color, new float[]{0, 0, 1.0f},
+            circles.add(new Circle("Circle", color, new float[]{0, 0, 1.0f},
                     photo,
                     circleProgram, circleMVPMatrixHandle,
                     circlePositionHandler, circleColorHandler));
         }
-        circles.clear();
+        isBusy = false;
+        EventBus.getDefault().post(new AddFigureEvent(isBusy));
     }
 
     @Override
@@ -154,12 +167,11 @@ public class GlRenderer implements Renderer {
         Matrix.translateM(mvpMatrix1, 0, mvpMatrix, 0, 0, 0, 0);
         GLES20.glUniformMatrix4fv(circleMVPMatrixHandle, 1, false, mvpMatrix1, 0);
 
-        for (Iterator<Circle> it = circles.iterator(); it.hasNext(); ) {
-            it.next().draw(projectionMatrix, viewMatrix);
+        if (!isBusy) {
+            for (Iterator<Circle> it = circles.iterator(); it.hasNext(); ) {
+                it.next().draw(projectionMatrix, viewMatrix);
+            }
         }
-
-        circles.addAll(circlesToAdd);
-        circlesToAdd.clear();
 
         float[] mvpMatrix2 = new float[16];
         Matrix.translateM(mvpMatrix2, 0, mvpMatrix, 0, 0, 0, 0);
