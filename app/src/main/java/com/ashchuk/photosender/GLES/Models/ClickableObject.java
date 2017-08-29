@@ -8,7 +8,9 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 /**
- * Created by andro on 21.06.2017.
+ * Created by ashchuk on 25.05.2017.
+ * Used https://github.com/peyo-hd/GLES20Example as example
+ * Used https://github.com/LHSG/AndroidRayPickingDemo as example
  */
 
 public class ClickableObject {
@@ -76,15 +78,14 @@ public class ClickableObject {
 
         for (Triangle triangle : triangles) {
             float[] intersection = new float[3];
-            int intersects1 = triangle.intersectRayAndTriangle(near_xyz, far_xyz, triangle, intersection);
+            int intersects = triangle.intersectRayAndTriangle(near_xyz, far_xyz, triangle, intersection);
 
-            if (intersects1 == 1 || intersects1 == 2) {
+            if (intersects == 1 || intersects == 2) {
                 double length = Math.sqrt(
                         Math.pow(near_xyz[0] - intersection[0], 2) +
                                 Math.pow(near_xyz[1] - intersection[1], 2) +
                                 Math.pow(near_xyz[2] - intersection[2], 2)
                 );
-                Log.d(TAG, "Touch!: " + name + " Length: " + Double.toString(length));
                 return length;
             }
         }
@@ -100,8 +101,6 @@ public class ClickableObject {
         float[] out = new float[3];
         float[] temp = new float[4];
         float[] temp2 = new float[4];
-        // get the near and far ords for the click
-
         float winx = xTouch, winy = (float) viewport[3] - yTouch;
 
         int result = GLU.gluUnProject(winx, winy, winz, viewMatrix, 0, projMatrix, 0, viewport, 0, temp, 0);

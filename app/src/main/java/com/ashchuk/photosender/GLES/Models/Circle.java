@@ -8,6 +8,12 @@ import com.ashchuk.photosender.Models.Photo;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+/**
+ * Created by ashchuk on 25.05.2017.
+ * Used https://github.com/peyo-hd/GLES20Example as example
+ * Used https://github.com/LHSG/AndroidRayPickingDemo as example
+ */
+
 public class Circle extends ClickableObject {
     private final static String TAG = "Circle";
 

@@ -7,6 +7,12 @@ import android.opengl.GLUtils;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+/**
+ * Created by ashchuk on 25.05.2017.
+ * Used https://github.com/peyo-hd/GLES20Example as example
+ * Used https://github.com/LHSG/AndroidRayPickingDemo as example
+ */
+
 public class Sphere extends GLES20 {
     private SphereModel mModel;
 

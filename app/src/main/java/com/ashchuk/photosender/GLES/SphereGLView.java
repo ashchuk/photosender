@@ -1,7 +1,9 @@
 package com.ashchuk.photosender.GLES;
 
 /**
- * Created by andro on 27.03.2017.
+ * Created by ashchuk on 25.05.2017.
+ * Used https://github.com/peyo-hd/GLES20Example as example
+ * Used https://github.com/LHSG/AndroidRayPickingDemo as example
  */
 
 import android.content.Context;
@@ -71,8 +73,8 @@ public class SphereGLView extends GLSurfaceView {
             case MotionEvent.ACTION_MOVE:
                 float mX = event.getX();
                 float mY = event.getY();
-                mRenderer.PointerX += (mX - mdX) / 20;
-                mRenderer.PointerY += (mY - mdY) / 20;
+                mRenderer.PointerX += (mX - mdX) / 7;
+                mRenderer.PointerY += (mY - mdY) / 7;
                 mdX = mX;
                 mdY = mY;
                 return true;

@@ -21,8 +21,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-
-/*
+/**
+ * Created by ashchuk on 25.05.2017.
+ * Used https://github.com/peyo-hd/GLES20Example as example
+ * Used https://github.com/LHSG/AndroidRayPickingDemo as example
+ *
  * Class for generating a sphere model for given input params
  * The generated class will have vertices and indices
  * Vertices data is composed of vertex coordinates in x, y, z followed by
@@ -42,31 +45,21 @@ public class SphereModel {
     private int[] mNumIndices;
     private int mTotalIndices;
 
-    /*
-     * @param nSlices how many slice in horizontal direction.
-     *                The same slice for vertical direction is applied.
-     *                nSlices should be > 1 and should be <= 180
-     * @param x,y,z the origin of the sphere
-     * @param r the radius of the sphere
-     */
     public SphereModel(int nSlices, float x, float y, float z, float r, int numIndexBuffers) {
 
         int iMax = nSlices + 1;
         int nVertices = iMax * iMax;
         if (nVertices > Short.MAX_VALUE) {
-            // this cannot be handled in one vertices / indices pair
             throw new RuntimeException("nSlices " + nSlices + " too big for vertex");
         }
         mTotalIndices = nSlices * nSlices * 6;
         float angleStepI = ((float) Math.PI / nSlices);
         float angleStepJ = ((2.0f * (float) Math.PI) / nSlices);
 
-        // 3 vertex coords + 2 texture coords
         mVertices = ByteBuffer.allocateDirect(nVertices * 5 * FLOAT_SIZE)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mIndices = new ShortBuffer[numIndexBuffers];
         mNumIndices = new int[numIndexBuffers];
-        // first evenly distribute to n-1 buffers, then put remaining ones to the last one.
         int noIndicesPerBuffer = (mTotalIndices / numIndexBuffers / 6) * 6;
         for (int i = 0; i < numIndexBuffers - 1; i++) {
             mNumIndices[i] = noIndicesPerBuffer;
@@ -78,7 +71,6 @@ public class SphereModel {
             mIndices[i] = ByteBuffer.allocateDirect(mNumIndices[i] * SHORT_SIZE)
                     .order(ByteOrder.nativeOrder()).asShortBuffer();
         }
-        // calling put for each float took too much CPU time, so put by line instead
         float[] vLineBuffer = new float[iMax * 5];
         for (int i = 0; i < iMax; i++) {
             for (int j = 0; j < iMax; j++) {
@@ -87,11 +79,9 @@ public class SphereModel {
                 float sinj = (float) Math.sin(angleStepJ * j);
                 float cosi = (float) Math.cos(angleStepI * i);
                 float cosj = (float) Math.cos(angleStepJ * j);
-                // vertex x,y,z
                 vLineBuffer[vertexBase + 0] = x + r * sini * sinj;
                 vLineBuffer[vertexBase + 1] = y + r * cosi;
                 vLineBuffer[vertexBase + 2] = z + r * sini * cosj;
-                // texture s,t
                 vLineBuffer[vertexBase + 3] = (float) j / (float) nSlices;
                 vLineBuffer[vertexBase + 4] = (float) i / (float) nSlices;
             }
@@ -106,9 +96,7 @@ public class SphereModel {
                 int i1 = i + 1;
                 int j1 = j + 1;
                 if (index >= mNumIndices[bufferNum]) {
-                    // buffer ready for moving to target
                     mIndices[bufferNum].put(indexBuffer, 0, mNumIndices[bufferNum]);
-                    // move to the next one
                     index = 0;
                     bufferNum++;
                 }
