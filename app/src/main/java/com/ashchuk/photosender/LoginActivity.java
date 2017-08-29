@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ashchuk.photosender.Loaders.LoginAsyncTaskLoader;
-import com.ashchuk.photosender.Loaders.StaticWebClient;
 import com.ashchuk.photosender.Models.User;
 
 import butterknife.BindView;
@@ -30,13 +29,13 @@ public class LoginActivity
     private static final int LOADER_ID = 0;
 
     @BindView(R.id.input_email)
-    EditText _emailText;
+    EditText _emailTextView;
     @BindView(R.id.input_password)
-    EditText _passwordText;
+    EditText _passwordTextView;
     @BindView(R.id.btn_login)
-    Button _loginButton;
+    Button _loginButtonView;
     @BindView(R.id.link_signup)
-    TextView _signupLink;
+    TextView _signupLinkView;
 
     private ProgressDialog progressDialog;
 
@@ -46,17 +45,17 @@ public class LoginActivity
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        _loginButton.setOnClickListener(new View.OnClickListener() {
+        _loginButtonView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                String email = _emailText.getText().toString();
-                String password = _passwordText.getText().toString();
+                String email = _emailTextView.getText().toString();
+                String password = _passwordTextView.getText().toString();
                 login(email, password);
             }
         });
 
-        _signupLink.setOnClickListener(new View.OnClickListener() {
+        _signupLinkView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -77,8 +76,8 @@ public class LoginActivity
         if (user == null)
             return;
 
-        _emailText.setText(user.getEmail());
-        _passwordText.setText(user.getPassword());
+        _emailTextView.setText(user.getEmail());
+        _passwordTextView.setText(user.getPassword());
         login(user.getEmail(), user.getPassword());
     }
 
@@ -90,7 +89,7 @@ public class LoginActivity
             return;
         }
 
-        _loginButton.setEnabled(false);
+        _loginButtonView.setEnabled(false);
 
         progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -126,7 +125,7 @@ public class LoginActivity
     }
 
     public void onLoginSuccess(User user) {
-        _loginButton.setEnabled(true);
+        _loginButtonView.setEnabled(true);
         Intent intent = new Intent(this, PlanetActivity.class);
         intent.putExtra("user", user);
         finish();
@@ -135,27 +134,27 @@ public class LoginActivity
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-        _loginButton.setEnabled(true);
+        _loginButtonView.setEnabled(true);
     }
 
     public boolean validate() {
         boolean valid = true;
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        String email = _emailTextView.getText().toString();
+        String password = _passwordTextView.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+            _emailTextView.setError("enter a valid email address");
             valid = false;
         } else {
-            _emailText.setError(null);
+            _emailTextView.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+            _passwordTextView.setError("between 4 and 10 alphanumeric characters");
             valid = false;
         } else {
-            _passwordText.setError(null);
+            _passwordTextView.setError(null);
         }
 
         return valid;

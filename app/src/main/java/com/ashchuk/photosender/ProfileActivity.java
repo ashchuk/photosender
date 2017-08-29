@@ -14,22 +14,24 @@ import android.widget.TextView;
 
 import com.ashchuk.photosender.Models.User;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ProfileActivity extends AppCompatActivity {
 
     @BindView(R.id.userProfileImage)
-    ImageView userProfileImage;
+    ImageView _userProfileImageView;
     @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    Toolbar _toolbarView;
     @BindView(R.id.fab)
-    FloatingActionButton fab;
-
+    FloatingActionButton _fabView;
     @BindView(R.id.email)
-    TextView email;
+    TextView _emailView;
     @BindView(R.id.registrationDate)
-    TextView registrationDate;
+    TextView _registrationDateView;
 
     private User user;
 
@@ -39,9 +41,9 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        setSupportActionBar(toolbar);
+        setSupportActionBar(_toolbarView);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        _fabView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Nothing", Snackbar.LENGTH_LONG)
@@ -53,8 +55,8 @@ public class ProfileActivity extends AppCompatActivity {
         setTitle(user.getName());
 
         Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(user.getAvatar(), 0), 0, Base64.decode(user.getAvatar(), 0).length);
-        userProfileImage.setImageBitmap(image);
-        email.setText(user.getEmail());
-        registrationDate.setText(user.getRegistrationDate().toString());
+        _userProfileImageView.setImageBitmap(image);
+        _emailView.setText(user.getEmail());
+        _registrationDateView.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(user.getRegistrationDate()));
     }
 }

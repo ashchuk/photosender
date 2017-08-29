@@ -35,28 +35,28 @@ public class PhotoActivity
 
     private Boolean photoDownloaded;
     private Boolean userDownloaded;
-
-    @BindView(R.id.username)
-    TextView username;
-    @BindView(R.id.userProfileImage)
-    CircleImageView userProfileImage;
-    @BindView(R.id.date)
-    TextView date;
-
-    @BindView(R.id.comment)
-    TextView comment;
-    @BindView(R.id.location)
-    TextView location;
-    @BindView(R.id.photo)
-    ImageView photoView;
-
-    @BindView(R.id.contentView)
-    LinearLayout contentView;
-    @BindView(R.id.progressIndicator)
-    AVLoadingIndicatorView progressIndicator;
-
     private User user;
     private Photo photo;
+
+    @BindView(R.id.username)
+    TextView _usernameView;
+    @BindView(R.id.userProfileImage)
+    CircleImageView _userProfileImageView;
+    @BindView(R.id.date)
+    TextView _dateView;
+
+    @BindView(R.id.comment)
+    TextView _commentView;
+    @BindView(R.id.location)
+    TextView _locationView;
+    @BindView(R.id.photo)
+    ImageView _photoView;
+
+    @BindView(R.id.contentView)
+    LinearLayout _contentView;
+
+    @BindView(R.id.progressIndicator)
+    AVLoadingIndicatorView _progressIndicatorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class PhotoActivity
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
 
-        location.setOnClickListener(new View.OnClickListener() {
+        _locationView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String uri = String.format(Locale.ENGLISH, "geo:%f,%f", photo.getLatitude(), photo.getLongitude());
@@ -85,13 +85,13 @@ public class PhotoActivity
     }
 
     private void showProgress() {
-        contentView.setVisibility(View.GONE);
-        progressIndicator.smoothToShow();
+        _contentView.setVisibility(View.GONE);
+        _progressIndicatorView.smoothToShow();
     }
 
     private void hideProgress() {
-        contentView.setVisibility(View.VISIBLE);
-        progressIndicator.smoothToHide();
+        _contentView.setVisibility(View.VISIBLE);
+        _progressIndicatorView.smoothToHide();
     }
 
     private void startDownload() {
@@ -128,17 +128,17 @@ public class PhotoActivity
         if (loader.getId() == PHOTO_LOADER_ID) {
             String base64 = (String) obj;
             Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(base64, 0), 0, Base64.decode(base64, 0).length);
-            photoView.setImageBitmap(image);
-            comment.setText(photo.getDescription());
-            location.setText(String.format("%.4f, %.4f", photo.getLatitude(), photo.getLongitude()));
+            _photoView.setImageBitmap(image);
+            _commentView.setText(photo.getDescription());
+            _locationView.setText(String.format("%.4f, %.4f", photo.getLatitude(), photo.getLongitude()));
 
             photoDownloaded = true;
         }
         if (loader.getId() == USER_LOADER_ID) {
             user = (User) obj;
-            username.setText(user.getName());
+            _usernameView.setText(user.getName());
             Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(user.getAvatar(), 0), 0, Base64.decode(user.getAvatar(), 0).length);
-            userProfileImage.setImageBitmap(image);
+            _userProfileImageView.setImageBitmap(image);
 
             userDownloaded = true;
         }

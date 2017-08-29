@@ -55,20 +55,19 @@ public class TakePhotoActivity extends AppCompatActivity
     private Location lastKnownLocation = null;
 
     @BindView(R.id.progressIndicator)
-    AVLoadingIndicatorView progressIndicator;
+    AVLoadingIndicatorView _progressIndicatorView;
     @BindView(R.id.contentView)
-    LinearLayout contentView;
-
+    LinearLayout _contentView;
     @BindView(R.id.sendfab)
-    FloatingActionButton sendfab;
+    FloatingActionButton _sendFABView;
     @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    Toolbar _toolbarView;
     @BindView(R.id.image)
-    ImageView imageView;
+    ImageView _imageView;
     @BindView(R.id.comment)
-    TextView commentView;
+    TextView _commentView;
     @BindView(R.id.location)
-    TextView locationView;
+    TextView _locationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +78,9 @@ public class TakePhotoActivity extends AppCompatActivity
         showProgress();
         initLocationListener();
 
-        setSupportActionBar(toolbar);
+        setSupportActionBar(_toolbarView);
 
-        sendfab.setOnClickListener(new View.OnClickListener() {
+        _sendFABView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -105,7 +104,7 @@ public class TakePhotoActivity extends AppCompatActivity
 
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("image", stream.toByteArray());
-                bundle.putString("comment", !commentView.getText().toString().isEmpty() ? commentView.getText().toString() : "");
+                bundle.putString("comment", !_commentView.getText().toString().isEmpty() ? _commentView.getText().toString() : "");
                 bundle.putDouble("latitude", lastKnownLocation.getLatitude());
                 bundle.putDouble("longitude", lastKnownLocation.getLongitude());
 
@@ -113,7 +112,7 @@ public class TakePhotoActivity extends AppCompatActivity
             }
         });
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+        _imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startCropImageActivity();
@@ -135,13 +134,13 @@ public class TakePhotoActivity extends AppCompatActivity
     }
 
     private void showProgress() {
-        contentView.setVisibility(View.GONE);
-        progressIndicator.smoothToShow();
+        _contentView.setVisibility(View.GONE);
+        _progressIndicatorView.smoothToShow();
     }
 
     private void hideProgress() {
-        contentView.setVisibility(View.VISIBLE);
-        progressIndicator.smoothToHide();
+        _contentView.setVisibility(View.VISIBLE);
+        _progressIndicatorView.smoothToHide();
     }
 
     private void initLocationListener() {
@@ -151,8 +150,8 @@ public class TakePhotoActivity extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 lastKnownLocation = location;
-                locationView.setText("Location applied!");
-                locationView.setTextColor(Color.parseColor("#1da526"));
+                _locationView.setText("Location applied!");
+                _locationView.setTextColor(Color.parseColor("#1da526"));
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -187,9 +186,9 @@ public class TakePhotoActivity extends AppCompatActivity
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                FILE_SUFFIX,    /* suffix */
-                storageDir      /* directory */
+                imageFileName,
+                FILE_SUFFIX,
+                storageDir
         );
         return image;
     }
@@ -226,13 +225,13 @@ public class TakePhotoActivity extends AppCompatActivity
             }
             if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
                 image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoURI);
-                imageView.setImageBitmap(image);
+                _imageView.setImageBitmap(image);
             }
             if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 if (resultCode == RESULT_OK) {
                     image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), result.getUri());
-                    imageView.setImageBitmap(image);
+                    _imageView.setImageBitmap(image);
                 } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                     throw result.getError();
                 }

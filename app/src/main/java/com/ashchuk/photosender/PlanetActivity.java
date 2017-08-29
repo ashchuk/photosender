@@ -51,25 +51,25 @@ public class PlanetActivity extends AppCompatActivity
 
     static class HeaderView {
         @BindView(R.id.userProfileImage)
-        CircleImageView userProfileImage;
+        CircleImageView userProfileImageView;
         @BindView(R.id.username)
-        TextView username;
+        TextView usernameView;
         @BindView(R.id.email)
-        TextView email;
+        TextView emailView;
     }
 
     @BindView(R.id.refreshfab)
-    FloatingActionButton refreshfab;
+    FloatingActionButton _refreshFABView;
     @BindView(R.id.photofab)
-    FloatingActionButton photofab;
+    FloatingActionButton _photoFABView;
     @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    Toolbar _toolbarView;
     @BindView(R.id.mGLView)
-    SphereGLView mOpenGLView;
+    SphereGLView _OpenGLView;
     @BindView(R.id.nav_view)
-    NavigationView navigationView;
+    NavigationView _navigationView;
     @BindView(R.id.drawer_layout)
-    DrawerLayout drawer;
+    DrawerLayout _drawerLayoutView;
 
     private GlRenderer mGLRenderer;
     private User currentUser;
@@ -81,12 +81,12 @@ public class PlanetActivity extends AppCompatActivity
 
         HeaderView header = new HeaderView();
         ButterKnife.bind(this);
-        ButterKnife.bind(header, navigationView.getHeaderView(HEADER_VIEW_INDEX));
+        ButterKnife.bind(header, _navigationView.getHeaderView(HEADER_VIEW_INDEX));
 
         mGLRenderer = new GlRenderer(this);
-        mOpenGLView.InitView(mGLRenderer);
+        _OpenGLView.InitView(mGLRenderer);
 
-        refreshfab.setOnClickListener(new View.OnClickListener() {
+        _refreshFABView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startDownloadAnimation();
@@ -94,14 +94,14 @@ public class PlanetActivity extends AppCompatActivity
             }
         });
 
-        photofab.setOnClickListener(new View.OnClickListener() {
+        _photoFABView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 redirectToTakePhoto();
             }
         });
 
-        navigationView.getHeaderView(HEADER_VIEW_INDEX)
+        _navigationView.getHeaderView(HEADER_VIEW_INDEX)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -109,22 +109,22 @@ public class PlanetActivity extends AppCompatActivity
                     }
                 });
 
-        setSupportActionBar(toolbar);
+        setSupportActionBar(_toolbarView);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, _drawerLayoutView, _toolbarView, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        _drawerLayoutView.setDrawerListener(toggle);
         toggle.syncState();
 
         currentUser = (User) getIntent().getSerializableExtra("user");
 
-        header.username.setText(currentUser.getName());
-        header.email.setText(currentUser.getEmail());
+        header.usernameView.setText(currentUser.getName());
+        header.emailView.setText(currentUser.getEmail());
         Bitmap image = BitmapFactory.decodeByteArray(
                 Base64.decode(currentUser.getAvatar(), 0),
                 0, Base64.decode(currentUser.getAvatar(), 0).length);
-        header.userProfileImage.setImageBitmap(image);
+        header.userProfileImageView.setImageBitmap(image);
 
-        navigationView.setNavigationItemSelectedListener(this);
+        _navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void redirectToTakePhoto() {
@@ -151,9 +151,9 @@ public class PlanetActivity extends AppCompatActivity
             @Override
             public void onAnimationEnd(Animation animation) {
                 if (isBusy)
-                    refreshfab.startAnimation(animation);
+                    _refreshFABView.startAnimation(animation);
                 else
-                    refreshfab.clearAnimation();
+                    _refreshFABView.clearAnimation();
             }
 
             @Override
@@ -161,13 +161,13 @@ public class PlanetActivity extends AppCompatActivity
 
             }
         });
-        refreshfab.startAnimation(animation);
+        _refreshFABView.startAnimation(animation);
     }
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (_drawerLayoutView.isDrawerOpen(GravityCompat.START)) {
+            _drawerLayoutView.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -211,7 +211,7 @@ public class PlanetActivity extends AppCompatActivity
             startLogoutTask();
         }
 
-        drawer.closeDrawer(GravityCompat.START);
+        _drawerLayoutView.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -231,13 +231,13 @@ public class PlanetActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        mOpenGLView.onResume();
+        _OpenGLView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mOpenGLView.onPause();
+        _OpenGLView.onPause();
     }
 
     @Override
