@@ -20,6 +20,7 @@ import com.ashchuk.photosender.Models.Photo;
 import com.ashchuk.photosender.Models.User;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -131,7 +132,7 @@ public class PhotoActivity
             _photoView.setImageBitmap(image);
             _commentView.setText(photo.getDescription());
             _locationView.setText(String.format("%.4f, %.4f", photo.getLatitude(), photo.getLongitude()));
-
+            _dateView.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(photo.getDate()));
             photoDownloaded = true;
         }
         if (loader.getId() == USER_LOADER_ID) {

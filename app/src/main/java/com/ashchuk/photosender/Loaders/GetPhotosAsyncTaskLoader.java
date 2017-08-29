@@ -3,6 +3,7 @@ package com.ashchuk.photosender.Loaders;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
+import com.ashchuk.photosender.Infrastructure.GsonUTCDateAdapter;
 import com.ashchuk.photosender.Models.Photo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,6 +12,7 @@ import org.json.JSONArray;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,7 +45,7 @@ public class GetPhotosAsyncTaskLoader extends AsyncTaskLoader<Object> {
             Type listType = new TypeToken<ArrayList<Photo>>(){}.getType();
             JSONArray jsonArray = new JSONArray(response.body().string());
 
-            Gson gson = new GsonBuilder().setDateFormat("yy/MM/dd hh:mm:ss").create();
+            Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create();
             photos = gson.fromJson(jsonArray.toString(), listType);
 
             return photos;

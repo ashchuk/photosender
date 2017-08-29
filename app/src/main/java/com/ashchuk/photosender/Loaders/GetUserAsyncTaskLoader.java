@@ -3,6 +3,7 @@ package com.ashchuk.photosender.Loaders;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
+import com.ashchuk.photosender.Infrastructure.GsonUTCDateAdapter;
 import com.ashchuk.photosender.Models.User;
 
 import org.json.JSONObject;
@@ -15,6 +16,8 @@ import okhttp3.Response;
 import com.ashchuk.photosender.Infrastructure.AppConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Date;
 
 /**
  * Created by andro on 17.02.2017.
@@ -57,7 +60,7 @@ public class GetUserAsyncTaskLoader extends AsyncTaskLoader {
             Response response = client.newCall(getUserRequest).execute();
             JSONObject data = new JSONObject(response.body().string());
 
-            Gson gson = new GsonBuilder().setDateFormat("yy/MM/dd hh:mm:ss").create();
+            Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create();
             User user = gson.fromJson(data.toString(), User.class);
 
             return user;

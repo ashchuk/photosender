@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.ashchuk.photosender.Models.User;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +56,6 @@ public class ProfileActivity extends AppCompatActivity {
         Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(user.getAvatar(), 0), 0, Base64.decode(user.getAvatar(), 0).length);
         _userProfileImageView.setImageBitmap(image);
         _emailView.setText(user.getEmail());
-        _registrationDateView.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(user.getRegistrationDate()));
+        _registrationDateView.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(user.getRegistrationDate()));
     }
 }
