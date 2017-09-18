@@ -260,6 +260,7 @@ public class PlanetActivity extends AppCompatActivity
 
     private void logout() {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("uuid", currentUser.getId());
         finish();
         startActivity(intent);
     }
@@ -294,7 +295,7 @@ public class PlanetActivity extends AppCompatActivity
         if (id == SYNC_LOADER_ID)
             return new GetPhotosAsyncTaskLoader(this);
         if (id == LOGOUT_LOADER_ID)
-            return new LogoutAsyncTaskLoader(this, currentUser.getId());
+            return new LogoutAsyncTaskLoader(this);
         return null;
     }
 

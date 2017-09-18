@@ -17,9 +17,12 @@ import android.widget.Toast;
 import com.ashchuk.photosender.Loaders.LoginAsyncTaskLoader;
 import com.ashchuk.photosender.Models.User;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmObject;
 
 public class LoginActivity
         extends AppCompatActivity
@@ -66,11 +69,25 @@ public class LoginActivity
             }
         });
 
-        tryToLogin();
+        Intent intent = getIntent();
+        if (intent.getStringExtra("uuid") != null)
+            clearRealmUser(intent.getStringExtra("uuid"));
+        else
+            tryToLogin();
+    }
+
+    private void clearRealmUser(String userUuid) {
+        Realm.init(this);
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmObject user = realm.where(User.class).equalTo("uuid", userUuid).findFirst();
+        user.deleteFromRealm();
+        realm.commitTransaction();
     }
 
     private void tryToLogin() {
         Realm.init(this);
+
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).findFirst();
 
@@ -95,6 +112,7 @@ public class LoginActivity
         progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
+        progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 

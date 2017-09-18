@@ -8,6 +8,7 @@ import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cookie;
 import okhttp3.OkHttpClient;
@@ -34,6 +35,9 @@ public class StaticWebClient {
             httpClient = new OkHttpClient.Builder()
                     .retryOnConnectionFailure(true)
                     .cookieJar(cookieJar)
+                    .connectTimeout(40, TimeUnit.SECONDS)
+                    .writeTimeout(40, TimeUnit.SECONDS)
+                    .readTimeout(60, TimeUnit.SECONDS)
                     .build();
             clientInstance  = new StaticWebClient(cookieJar, httpClient);
         }
@@ -45,7 +49,7 @@ public class StaticWebClient {
 
     public List<Cookie> getPersistantCookies() { return sharedPrefsCookiePersistor.loadAll(); }
 
-    public void clearCookies(){ sharedPrefsCookiePersistor.clear(); }
+    public static void clearCookies(){ sharedPrefsCookiePersistor.clear(); }
 
     public boolean userAlreadyLoggedIn(){
         List<Cookie> savedCookies = StaticWebClient.getInstance().getPersistantCookies();

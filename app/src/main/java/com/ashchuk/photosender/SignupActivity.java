@@ -78,6 +78,7 @@ public class SignupActivity
         _progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         _progressDialog.setIndeterminate(true);
+        _progressDialog.setCanceledOnTouchOutside(false);
         _progressDialog.setMessage("Creating Account...");
         _progressDialog.show();
 

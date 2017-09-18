@@ -53,9 +53,11 @@ public class ProfileActivity extends AppCompatActivity {
         user = (User) getIntent().getSerializableExtra("user");
         setTitle(user.getName());
 
-        Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(user.getAvatar(), 0), 0, Base64.decode(user.getAvatar(), 0).length);
+        Bitmap image = BitmapFactory.decodeByteArray(Base64.decode(user.getAvatar(), 0),
+                0, Base64.decode(user.getAvatar(), 0).length);
         _userProfileImageView.setImageBitmap(image);
         _emailView.setText(user.getEmail());
-        _registrationDateView.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(user.getRegistrationDate()));
+        _registrationDateView.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                .format(user.getRegistrationDate()));
     }
 }
