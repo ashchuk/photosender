@@ -5,10 +5,10 @@ package com.ashchuk.photosender.Infrastructure;
  */
 
 public class AppConstants {
-//    public final static String SERVER_HOSTNAME = "photoservice-ashchuk.rhcloud.com";
-//    public final static Integer SERVER_HOSTNAME_PORT = 80;
-//    public final static String SERVER_ADRESS = "http://photoservice-ashchuk.rhcloud.com";
+//    public final static String SERVER_HOSTNAME = "photoservice-photoservice.a3c1.starter-us-west-1.openshiftapps.com";
+//    public final static Integer SERVER_HOSTNAME_PORT = 8080;
+//    public final static String SERVER_ADRESS = "http://photoservice-photoservice.a3c1.starter-us-west-1.openshiftapps.com";
     public final static String SERVER_HOSTNAME = "10.0.2.2";
-    public final static Integer SERVER_HOSTNAME_PORT = 8051;
-    public final static String SERVER_ADRESS = "http://10.0.2.2:8051";
+    public final static Integer SERVER_HOSTNAME_PORT = 8080;
+    public final static String SERVER_ADRESS = "http://10.0.2.2:8080";
 }
